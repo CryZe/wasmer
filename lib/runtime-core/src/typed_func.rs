@@ -188,7 +188,7 @@ macro_rules! impl_traits {
             fn to_raw(&self) -> *const () {
                 assert_eq!(mem::size_of::<Self>(), 0, "you cannot use a closure that captures state for `Func`.");
 
-                extern fn wrap<$( $x: WasmExternType, )* Rets: WasmTypeList, Trap: TrapEarly<Rets>, FN: Fn( &mut Ctx $( ,$x )* ) -> Trap>( ctx: &mut Ctx $( ,$x: $x )* ) -> Rets::CStruct {
+                extern "sysv64" fn wrap<$( $x: WasmExternType, )* Rets: WasmTypeList, Trap: TrapEarly<Rets>, FN: Fn( &mut Ctx $( ,$x )* ) -> Trap>( ctx: &mut Ctx $( ,$x: $x )* ) -> Rets::CStruct {
                     let f: FN = unsafe { mem::transmute_copy(&()) };
 
                     let msg = match panic::catch_unwind(panic::AssertUnwindSafe(|| {
